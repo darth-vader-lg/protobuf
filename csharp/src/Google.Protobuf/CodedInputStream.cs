@@ -170,7 +170,7 @@ namespace Google.Protobuf
                 throw new ArgumentOutOfRangeException("recursionLimit!", "Recursion limit must be positive");
             }
             this.state.sizeLimit = sizeLimit;
-            this.state.recursionLimit = recursionLimit;
+            this.state.recursionLimit = Math.Max(recursionLimit, ForceMinRecursionLimit);
         }
         #endregion
 
@@ -239,6 +239,19 @@ namespace Google.Protobuf
         /// The recursion limit for this stream.
         /// </value>
         public int RecursionLimit { get { return state.recursionLimit; } }
+
+        /// <summary>
+        /// Force the minimum recursion limit.
+        /// </summary>
+        /// <remarks>
+        /// This is just a workaround for a malfunction in the Microsoft Machine Learning library aka ML.NET.
+        /// They fix a limit of 10 recursions while reading ONNX graph and this is not enough for most models.
+        /// Setting this value forces the maximum recursions to don't be lower than this value
+        /// </remarks>
+        /// <value>
+        /// The minimum recursion limit for this stream.
+        /// </value>
+        public static int ForceMinRecursionLimit { get; set; }
 
         /// <summary>
         /// Internal-only property; when set to true, unknown fields will be discarded while parsing.
